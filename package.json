@@ -1,0 +1,16 @@
+{
+  "name": "weather-station",
+  "private": true,
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "check": "tsc --noEmit",
+    "db:migrate:local": "wrangler d1 migrations apply weather-station --local",
+    "db:migrate:remote": "wrangler d1 migrations apply weather-station --remote"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "latest",
+    "typescript": "latest",
+    "wrangler": "latest"
+  }
+}

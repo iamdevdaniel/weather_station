@@ -1,0 +1,13 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "weather-station-api",
+	"main": "worker/index.ts",
+	"compatibility_date": "2026-10-20",
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "weather-station",
+			"database_id": "43150165-bd35-4074-9fc4-97994dace8d1"
+		}
+	]
+}

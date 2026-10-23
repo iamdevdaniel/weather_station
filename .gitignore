@@ -1,3 +1,18 @@
 # Local Codex instructions
 /AGENTS.md
-/aux files/
+
+# JavaScript / Cloudflare
+/node_modules/
+/.wrangler/
+/.dev.vars
+/arduino_secrets.h
+
+# Arduino build output
+/build/
+
+# Local-only work
+/.local/
+
+# Codex may recreate these when images are attached
+/.codex-attachments/
+/.codex-remote-attachments/
