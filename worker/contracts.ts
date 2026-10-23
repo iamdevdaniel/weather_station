@@ -1,6 +1,8 @@
 export interface Env {
 	DB: D1Database
 	DEVICE_API_TOKEN: string
+	UPLOAD_RATE_LIMITER: RateLimit
+	PUBLIC_API_RATE_LIMITER: RateLimit
 }
 
 export const SCHEMA_VERSION = 1

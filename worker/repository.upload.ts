@@ -122,19 +122,26 @@ function buildSampleInserts(
 function resolveSampleTime(sample: Sample, anchor: TimeAnchor | null) {
 	if (!anchor) return { capturedAt: null, timeState: "missing" } as const
 
-	const timestamp =
+	const capturedAtMs =
 		Date.parse(anchor.utc) +
 		sample.elapsedSinceBootMs -
 		anchor.elapsedSinceBootMs
-	if (!Number.isFinite(timestamp)) {
+	if (!Number.isFinite(capturedAtMs)) {
 		return { capturedAt: null, timeState: "missing" } as const
 	}
 
+	const capturedAtDate = new Date(capturedAtMs)
+	if (Number.isNaN(capturedAtDate.getTime())) {
+		return { capturedAt: null, timeState: "missing" } as const
+	}
+
+	const timeState =
+		sample.elapsedSinceBootMs === anchor.elapsedSinceBootMs
+			? "synced"
+			: "derived"
+
 	return {
-		capturedAt: new Date(timestamp).toISOString(),
-		timeState:
-			sample.elapsedSinceBootMs === anchor.elapsedSinceBootMs
-				? "synced"
-				: "derived",
+		capturedAt: capturedAtDate.toISOString(),
+		timeState,
 	} as const
 }

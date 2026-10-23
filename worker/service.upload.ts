@@ -10,12 +10,13 @@ import { findExistingUpload, storeUpload } from "./repository.upload"
 import { validateUpload } from "./validation.upload"
 
 export async function receiveUpload(request: Request, env: Env) {
-	const authorization = request.headers.get("authorization")
-	if (
-		!env.DEVICE_API_TOKEN ||
-		authorization !== `Bearer ${env.DEVICE_API_TOKEN}`
-	) {
-		return errorResponse(401, "unauthorized", "Invalid device credential")
+	const contentLength = request.headers.get("content-length")
+	if (contentLength !== null && Number(contentLength) > MAX_UPLOAD_BYTES) {
+		return errorResponse(
+			413,
+			"upload_too_large",
+			`Request exceeds ${MAX_UPLOAD_BYTES / 1024} KB`,
+		)
 	}
 
 	const bodyText = await request.text()

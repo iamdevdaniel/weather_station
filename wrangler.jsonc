@@ -9,5 +9,23 @@
 			"database_name": "weather-station",
 			"database_id": "43150165-bd35-4074-9fc4-97994dace8d1"
 		}
+	],
+	"ratelimits": [
+		{
+			"name": "UPLOAD_RATE_LIMITER",
+			"namespace_id": "1001",
+			"simple": {
+				"limit": 10,
+				"period": 60
+			}
+		},
+		{
+			"name": "PUBLIC_API_RATE_LIMITER",
+			"namespace_id": "1002",
+			"simple": {
+				"limit": 60,
+				"period": 60
+			}
+		}
 	]
 }
