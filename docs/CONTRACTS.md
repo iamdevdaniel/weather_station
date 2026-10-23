@@ -8,61 +8,57 @@ their own data shape because they serve different purposes.
 **Device request**
 
 ```ts
-type TimeAnchor = { utc: string; elapsedSinceBootMs: number };
+type TimeAnchor = { utc: string; elapsedSinceBootMs: number }
 
 type Sample = {
-  sampleId: string;
-  sequence: number;
-  elapsedSinceBootMs: number;
-  temperatureC: number | null;
-  humidityPct: number | null;
-  barometricPressure: number | null;
-  lightLux: number | null;
-  soundRmsAdc: number | null;
-  soundEstimatedDb: number | null;
-  batteryAdcRaw: number | null;
-  batteryVoltageV: number | null;
-  qualityFlags: string[];
-};
+	sequence: number
+	elapsedSinceBootMs: number
+	temperatureC: number | null
+	humidityPct: number | null
+	barometricPressure: number | null
+	lightLux: number | null
+	soundRmsAdc: number | null
+	soundEstimatedDb: number | null
+	batteryAdcRaw: number | null
+	batteryVoltageV: number | null
+	qualityFlags: string[]
+}
 
 type UploadRequest = {
-  schemaVersion: 1;
-  stationId: string;
-  uploadId: string;
-  bootId: string;
-  firmwareVersion: string;
-  droppedSamples: number;
-  timeAnchor: TimeAnchor | null;
-  samples: Sample[];
-};
+	schemaVersion: 1
+	stationId: string
+	uploadId: string
+	bootId: string
+	firmwareVersion: string
+	droppedSamples: number
+	timeAnchor: TimeAnchor | null
+	samples: Sample[]
+}
 ```
 
 **Worker response**
 
 ```ts
 type StationConfig = {
-  sampleIntervalSeconds: number;
-  uploadIntervalSeconds: number;
-};
+	sampleIntervalSeconds: number
+	uploadIntervalSeconds: number
+}
 
 type FirmwareUpdate = {
-  version: string;
-  url: string;
-  sha256: string;
-};
+	version: string
+	url: string
+	sha256: string
+}
 
 type UploadResponse = {
-  schemaVersion: 1;
-  uploadId: string;
-  stored: true;
-  accepted: number;
-  duplicates: number;
-  serverTime: string;
-  config: StationConfig;
-  firmwareUpdate: FirmwareUpdate | null;
-};
+	schemaVersion: 1
+	uploadId: string
+	stored: true
+	config: StationConfig
+	firmwareUpdate: FirmwareUpdate | null
+}
 
-type ApiError = { error: { code: string; message: string } };
+type ApiError = { error: { code: string; message: string } }
 ```
 
 ## Worker and React
@@ -79,9 +75,9 @@ UI data adds `capturedAt`, `timeState` (`synced`, `derived`, or `missing`), and
 
 ## D1
 
-| Table | Purpose | Main fields |
-| --- | --- | --- |
-| `stations` | Identity, configuration, last contact | `id`, `display_name`, `credential_hash`, intervals, timestamps |
-| `uploads` | One received upload | station/upload identity, schema, boot, firmware, sample and dropped counts, time anchor, receipt time |
-| `samples` | Authoritative raw readings | identity, time, barometric pressure and other sensor values, quality flags, receipt time |
-| `daily_summaries` | Rebuildable station-day aggregates | day, count, and min/average/max values |
+| Table             | Purpose                               | Main fields                                                                                           |
+| ----------------- | ------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| `stations`        | Identity, configuration, last contact | `id`, `display_name`, intervals, timestamps                                                           |
+| `uploads`         | One received upload                   | station/upload identity, schema, boot, firmware, sample and dropped counts, time anchor, receipt time |
+| `samples`         | Authoritative raw readings            | identity, time, barometric pressure and other sensor values, quality flags, receipt time              |
+| `daily_summaries` | Rebuildable station-day aggregates    | day, count, and min/average/max values                                                                |

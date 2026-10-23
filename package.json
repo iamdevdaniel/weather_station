@@ -1,16 +1,32 @@
 {
-  "name": "weather-station",
-  "private": true,
-  "scripts": {
-    "dev": "wrangler dev",
-    "deploy": "wrangler deploy",
-    "check": "tsc --noEmit",
-    "db:migrate:local": "wrangler d1 migrations apply weather-station --local",
-    "db:migrate:remote": "wrangler d1 migrations apply weather-station --remote"
-  },
-  "devDependencies": {
-    "@cloudflare/workers-types": "latest",
-    "typescript": "latest",
-    "wrangler": "latest"
-  }
+	"name": "weather-station",
+	"private": true,
+	"scripts": {
+		"typecheck": "tsc --noEmit",
+		"lint": "biome check --files-ignore-unknown=true .",
+		"lint:fix": "biome check --write --files-ignore-unknown=true .",
+		"check": "npm run typecheck && npm run lint",
+		"precommit": "lint-staged && npm run typecheck",
+		"prepare": "husky",
+		"worker:deploy": "wrangler deploy",
+		"db:migrate:production": "wrangler d1 migrations apply weather-station --remote"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^2.6.2",
+		"@cloudflare/workers-types": "latest",
+		"dredd-style": "github:iamdevdaniel/dredd-style",
+		"husky": "^9.1.7",
+		"lint-staged": "^17.6.0",
+		"typescript": "latest",
+		"wrangler": "latest"
+	},
+	"dependencies": {
+		"hono": "^4.13.13"
+	},
+	"lint-staged": {
+		"*.{js,jsx,ts,tsx,json,jsonc}": [
+			"biome check --write --no-errors-on-unmatched",
+			"biome check --error-on-warnings --no-errors-on-unmatched"
+		]
+	}
 }

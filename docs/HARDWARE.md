@@ -9,65 +9,65 @@ been tested with all sensors, mux channels, and SD read/write operating together
 
 **BME280**
 
-| ESP pin | Board pin |
-| --- | --- |
-| `3.3 V` | `VCC` |
-| `GND` | `GND` |
-| `D1 / GPIO5` | `SCL / SCK` |
-| `D2 / GPIO4` | `SDA / SDI` |
-| `3.3 V` | `CSB`, if exposed |
-| `GND` | `SDO`, if exposed; address `0x76` |
+| ESP pin      | Board pin                         |
+| ------------ | --------------------------------- |
+| `3.3 V`      | `VCC`                             |
+| `GND`        | `GND`                             |
+| `D1 / GPIO5` | `SCL / SCK`                       |
+| `D2 / GPIO4` | `SDA / SDI`                       |
+| `3.3 V`      | `CSB`, if exposed                 |
+| `GND`        | `SDO`, if exposed; address `0x76` |
 
 **BH1750**
 
-| ESP pin | Board pin |
-| --- | --- |
-| `3.3 V` | `VCC` |
-| `GND` | `GND` |
-| `D1 / GPIO5` | `SCL` |
-| `D2 / GPIO4` | `SDA` |
+| ESP pin       | Board pin              |
+| ------------- | ---------------------- |
+| `3.3 V`       | `VCC`                  |
+| `GND`         | `GND`                  |
+| `D1 / GPIO5`  | `SCL`                  |
+| `D2 / GPIO4`  | `SDA`                  |
 | No connection | `ADDR`; address `0x23` |
 
 **MAX4466**
 
-| ESP pin | Board pin |
-| --- | --- |
-| `3.3 V` | `VCC` |
-| `GND` | `GND` |
-| `A0`, through mux `SIG` and `C0` | `OUT` |
+| ESP pin                          | Board pin |
+| -------------------------------- | --------- |
+| `3.3 V`                          | `VCC`     |
+| `GND`                            | `GND`     |
+| `A0`, through mux `SIG` and `C0` | `OUT`     |
 
 **MicroSD**
 
-| ESP pin | Board pin |
-| --- | --- |
-| `VIN / 5 V` | `VCC` |
-| `GND` | `GND` |
+| ESP pin       | Board pin   |
+| ------------- | ----------- |
+| `VIN / 5 V`   | `VCC`       |
+| `GND`         | `GND`       |
 | `D5 / GPIO14` | `SCK / CLK` |
-| `D6 / GPIO12` | `MISO` |
-| `D7 / GPIO13` | `MOSI` |
-| `D8 / GPIO15` | `CS` |
+| `D6 / GPIO12` | `MISO`      |
+| `D7 / GPIO13` | `MOSI`      |
+| `D8 / GPIO15` | `CS`        |
 
 **74HC4067 mux**
 
-| ESP or source pin | Mux pin |
-| --- | --- |
-| `3.3 V` | `VCC` |
-| `GND` | `GND`, `EN`, `S1`, `S2`, `S3` |
-| `A0` | `SIG` |
-| `D3 / GPIO0` | `S0` |
-| MAX4466 `OUT` | `C0` |
-| Battery sense node | `C1` |
+| ESP or source pin  | Mux pin                       |
+| ------------------ | ----------------------------- |
+| `3.3 V`            | `VCC`                         |
+| `GND`              | `GND`, `EN`, `S1`, `S2`, `S3` |
+| `A0`               | `SIG`                         |
+| `D3 / GPIO0`       | `S0`                          |
+| MAX4466 `OUT`      | `C0`                          |
+| Battery sense node | `C1`                          |
 
 Leave `C2`–`C15` empty. Place a 100 nF capacitor directly between mux `VCC` and
 `GND`.
 
 **T-BAT**
 
-| ESP or perfboard connection | T-BAT connection |
-| --- | --- |
-| `VIN / 5 V`, through power switch | `5V OUT` |
-| `GND` | `GND` |
-| 330 kOhm resistor input | Raw `BAT+` |
+| ESP or perfboard connection       | T-BAT connection |
+| --------------------------------- | ---------------- |
+| `VIN / 5 V`, through power switch | `5V OUT`         |
+| `GND`                             | `GND`            |
+| 330 kOhm resistor input           | Raw `BAT+`       |
 
 ## Electrical notes
 

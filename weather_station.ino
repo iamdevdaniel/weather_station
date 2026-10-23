@@ -48,7 +48,6 @@ bool uploadSoundSample(double rms, int minValue, int maxValue, unsigned long cap
   if (WiFi.status() != WL_CONNECTED) return false;
 
   const String uploadId = bootId + "-upload-0";
-  const String sampleId = bootId + "-sample-0";
   const bool clipped = minValue <= 5 || maxValue >= 1018;
 
   String body;
@@ -56,10 +55,9 @@ bool uploadSoundSample(double rms, int minValue, int maxValue, unsigned long cap
   body += "{\"schemaVersion\":" + String(SCHEMA_VERSION);
   body += ",\"stationId\":\"station-1\",\"uploadId\":\"" + uploadId;
   body += "\",\"bootId\":\"" + bootId;
-  body += "\",\"firmwareVersion\":\"upload-smoke-test-1\",\"timeAnchor\":null,";
-  body += "\"samples\":[{\"sampleId\":\"" + sampleId;
-  body += "\",\"sequence\":0,\"elapsedSinceBootMs\":" + String(capturedAtMs);
-  body += ",\"temperatureC\":null,\"humidityPct\":null,\"lightLux\":null";
+  body += "\",\"firmwareVersion\":\"upload-smoke-test-1\",\"droppedSamples\":0,\"timeAnchor\":null,";
+  body += "\"samples\":[{\"sequence\":0,\"elapsedSinceBootMs\":" + String(capturedAtMs);
+  body += ",\"temperatureC\":null,\"humidityPct\":null,\"barometricPressure\":null,\"lightLux\":null";
   body += ",\"soundRmsAdc\":" + String(rms, 2);
   body += ",\"soundEstimatedDb\":null,\"batteryAdcRaw\":null,\"batteryVoltageV\":null";
   body += clipped ? ",\"qualityFlags\":[\"sound_clipped\"]}]}" : ",\"qualityFlags\":[]}]}";
