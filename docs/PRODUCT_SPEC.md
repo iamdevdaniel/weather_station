@@ -49,6 +49,9 @@ connectivity, and a custom PCB are outside V1.
   compatible, verified image when power is safe.
 - Failed downloads leave the running firmware and queued data intact. USB remains
   the recovery path if installed firmware cannot connect or run OTA.
+- Before field installation, verify the physical ESP reports 4 MB of flash, the
+  selected build layout provides an OTA slot, and the compiled firmware fits in
+  that slot. The expected limit is approximately 1 MB, not 2 MB.
 - `/` shows status, current readings, the current-day chart, and a calendar.
 - `/:date` shows detailed readings for one selected UTC day.
 - Online means contact within two upload cycles, delayed means within six, and
