@@ -5,7 +5,7 @@
 namespace FirmwareConfig {
 
 constexpr char STATION_ID[] = "station-1";
-constexpr char VERSION[] = "1.0.12";
+constexpr char VERSION[] = "1.0.14";
 constexpr char UPLOAD_URL[] =
     "https://weather-station-api.maydanachi.workers.dev/api/v1/uploads";
 constexpr char DEVICE_HEALTH_URL[] =

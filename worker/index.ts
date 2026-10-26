@@ -43,6 +43,9 @@ app.get("/api/v1/stations/:stationId/samples", (context) =>
 )
 
 app.all("/api/*", () => errorResponse(404, "not_found", "Route not found"))
+app.get("/firmware.bin", () =>
+	errorResponse(404, "not_found", "Route not found"),
+)
 app.get("*", (context) => context.env.ASSETS.fetch(context.req.raw))
 
 app.notFound(() => errorResponse(404, "not_found", "Route not found"))

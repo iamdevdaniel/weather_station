@@ -9,8 +9,8 @@
 		"run_worker_first": true
 	},
 	"vars": {
-		"FIRMWARE_VERSION": "1.0.12",
-		"FIRMWARE_SHA256": "6f31dc196dbf0beeaf783af5a40da4ffadf520444086cdec4bd451ab606eaea6"
+		"FIRMWARE_VERSION": "1.0.14",
+		"FIRMWARE_SHA256": "66889f756fc08c20dee78e4503caa046964b0704c59953aae280ea06653b17e8"
 	},
 	"d1_databases": [
 		{
