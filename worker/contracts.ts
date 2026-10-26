@@ -1,6 +1,9 @@
 export interface Env {
 	DB: D1Database
 	DEVICE_API_TOKEN: string
+	FIRMWARE_VERSION: string
+	FIRMWARE_SHA256: string
+	ASSETS: Fetcher
 	UPLOAD_RATE_LIMITER: RateLimit
 	PUBLIC_API_RATE_LIMITER: RateLimit
 }
@@ -37,6 +40,24 @@ export interface UploadRequest {
 	droppedSamples: number
 	timeAnchor: TimeAnchor | null
 	samples: Sample[]
+}
+
+export interface DeviceHealthRequest {
+	schemaVersion: number
+	stationId: string
+	bootId: string
+	firmwareVersion: string
+	sdOk: boolean
+	wifiRssi: number
+	elapsedSinceBootMs: number
+	temperatureC: number | null
+	humidityPct: number | null
+	barometricPressure: number | null
+	lightLux: number | null
+	soundRmsAdc: number | null
+	batteryAdcRaw: number | null
+	batteryVoltageV: number | null
+	issues: string[]
 }
 
 export interface StationConfig {

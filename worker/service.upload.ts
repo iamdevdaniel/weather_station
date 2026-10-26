@@ -7,6 +7,7 @@ import {
 import { errorResponse, jsonResponse } from "./http-response"
 import { findStationConfig } from "./repository.station"
 import { findExistingUpload, storeUpload } from "./repository.upload"
+import { findFirmwareUpdate } from "./service.firmware"
 import { validateUpload } from "./validation.upload"
 
 export async function receiveUpload(request: Request, env: Env) {
@@ -61,6 +62,7 @@ export async function receiveUpload(request: Request, env: Env) {
 	}
 
 	const upload = parsedUpload
+	const origin = new URL(request.url).origin
 	const config = await findStationConfig(env.DB, upload.stationId)
 	if (!config) {
 		return errorResponse(
@@ -75,20 +77,39 @@ export async function receiveUpload(request: Request, env: Env) {
 		upload.stationId,
 		upload.uploadId,
 	)
-	if (existingUpload) return uploadResponse(upload.uploadId, config)
+	if (existingUpload)
+		return uploadResponse(
+			upload.uploadId,
+			upload.firmwareVersion,
+			config,
+			env,
+			origin,
+		)
 
 	const receivedAt = new Date().toISOString()
 	await storeUpload(env.DB, upload, receivedAt)
 
-	return uploadResponse(upload.uploadId, config)
+	return uploadResponse(
+		upload.uploadId,
+		upload.firmwareVersion,
+		config,
+		env,
+		origin,
+	)
 }
 
-function uploadResponse(uploadId: string, config: StationConfig) {
+function uploadResponse(
+	uploadId: string,
+	firmwareVersion: string,
+	config: StationConfig,
+	env: Env,
+	origin: string,
+) {
 	return jsonResponse({
 		schemaVersion: SCHEMA_VERSION,
 		uploadId,
 		stored: true,
 		config,
-		firmwareUpdate: null,
+		firmwareUpdate: findFirmwareUpdate(env, firmwareVersion, origin),
 	})
 }

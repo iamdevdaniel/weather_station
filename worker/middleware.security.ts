@@ -2,7 +2,7 @@ import { createMiddleware } from "hono/factory"
 import type { Env } from "./contracts"
 import { errorResponse } from "./http-response"
 
-export const protectUploads = createMiddleware<{ Bindings: Env }>(
+export const protectDeviceApi = createMiddleware<{ Bindings: Env }>(
 	async (context, next) => {
 		const authorization = context.req.header("authorization")
 		if (
@@ -17,7 +17,7 @@ export const protectUploads = createMiddleware<{ Bindings: Env }>(
 		}
 
 		const rateLimit = await context.env.UPLOAD_RATE_LIMITER.limit({
-			key: "device-uploads",
+			key: "device-api",
 		})
 		if (!rateLimit.success) {
 			return errorResponse(
