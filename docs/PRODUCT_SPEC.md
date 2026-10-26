@@ -10,20 +10,28 @@ connectivity, and a custom PCB are outside V1.
 
 ## Core operation
 
-- Take one sample every 60 seconds and save it to microSD before using the
+- Take one sample every five minutes and save it to microSD before using the
   network.
+- Deep-sleep after each wake. `D0 / GPIO16` must be connected to `RST` so the
+  ESP8266 can wake itself.
+- Wake with the Wi-Fi radio disabled when only sampling. Wake with the radio
+  enabled when an upload or retry is due, then return to deep sleep.
+- Preserve logical boot identity, sequence, elapsed time, configuration, and the
+  upload countdown in RTC memory across deep-sleep wakes. A real power cycle
+  starts a new logical boot and sends one device-health report.
 - Read the microphone before Wi-Fi activity. After changing mux channels, wait
   briefly and discard the first ADC reading.
 - Represent a failed sensor with a `null` value and quality flag without stopping
   other measurements.
-- Attempt an upload every five minutes. Send 1–10 samples, stay below 8 KB, and
+- Attempt an upload every 20 minutes. Send 1–10 samples, stay below 8 KB, and
   recover pending data oldest first.
-- After failure, retry once immediately and then wait for the next upload cycle.
+- After failure, retry on the next five-minute wake instead of waiting for the
+  next regular upload cycle.
 - Delete queued data only after a matching successful response. Restarts and
   firmware updates never erase it.
 - Ignore duplicates safely. Server-provided intervals affect only future work.
-- Retain up to seven days or 10,080 samples. When full, remove the oldest complete
-  upload and count the lost samples.
+- Retain up to 10,080 samples, approximately 35 days at the current interval.
+  When full, remove the oldest complete upload and count the lost samples.
 - Treat pressure as station pressure, not sea-level-corrected pressure.
 - Preserve microphone AC RMS as the trustworthy noise value. Any decibel value
   is an estimate, not calibrated SPL.
@@ -45,8 +53,10 @@ connectivity, and a custom PCB are outside V1.
 
 ## Remote operation and interface
 
-- Check for firmware only after a successful upload. Install only a newer,
-  compatible, verified image when power is safe.
+- Check for firmware only after a successful upload. Accept a server-advertised
+  version only when it differs from the running version, uses HTTPS, and has a
+  valid SHA-256 value. Verify the downloaded image against that hash before
+  installation.
 - Failed downloads leave the running firmware and queued data intact. USB remains
   the recovery path if installed firmware cannot connect or run OTA.
 - Before field installation, verify the physical ESP reports 4 MB of flash, the
