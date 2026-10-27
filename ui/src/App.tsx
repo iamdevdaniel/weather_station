@@ -29,6 +29,8 @@ type MetricKey = Exclude<
 
 type TimeRange = "today" | "fourHours"
 
+const readingIntervalMs = 20 * 60 * 1000
+
 const metrics: Array<{
 	key: MetricKey
 	label: string
@@ -59,6 +61,7 @@ function App() {
 	const [timeRange, setTimeRange] = useState<TimeRange>("today")
 	const [error, setError] = useState<string | null>(null)
 	const [loading, setLoading] = useState(true)
+	const [now, setNow] = useState(() => Date.now())
 
 	const loadSamples = useCallback(async () => {
 		try {
@@ -84,13 +87,85 @@ function App() {
 
 	useEffect(() => {
 		void loadSamples()
-		const timer = window.setInterval(() => void loadSamples(), 60_000)
-		return () => window.clearInterval(timer)
 	}, [loadSamples])
+
+	const latestSampleAt = samples.at(-1)
+		? new Date(sampleTime(samples.at(-1) as Sample)).getTime()
+		: null
+
+	useEffect(() => {
+		let cancelled = false
+		let timer: number | undefined
+
+		const delayUntilNextCheck = () => {
+			if (!latestSampleAt || !Number.isFinite(latestSampleAt))
+				return 60_000
+
+			const untilExpected =
+				latestSampleAt + readingIntervalMs - Date.now()
+			if (untilExpected > 30_000) return untilExpected - 30_000
+			if (untilExpected > -2 * 60_000) return 15_000
+			if (untilExpected > -10 * 60_000) return 30_000
+			return 60_000
+		}
+
+		const schedule = () => {
+			timer = window.setTimeout(async () => {
+				await loadSamples()
+				if (!cancelled) schedule()
+			}, delayUntilNextCheck())
+		}
+
+		const refreshWhenVisible = async () => {
+			if (document.visibilityState !== "visible") return
+			window.clearTimeout(timer)
+			await loadSamples()
+			if (!cancelled) schedule()
+		}
+
+		schedule()
+		document.addEventListener("visibilitychange", refreshWhenVisible)
+
+		return () => {
+			cancelled = true
+			window.clearTimeout(timer)
+			document.removeEventListener("visibilitychange", refreshWhenVisible)
+		}
+	}, [latestSampleAt, loadSamples])
+
+	useEffect(() => {
+		const timer = window.setInterval(() => setNow(Date.now()), 1_000)
+		return () => window.clearInterval(timer)
+	}, [])
 
 	const latest = samples.at(-1)
 	const selected =
 		metrics.find((metric) => metric.key === selectedMetric) ?? metrics[0]
+	const nextReading = useMemo(() => {
+		if (!latest) return null
+
+		const latestAt = new Date(sampleTime(latest)).getTime()
+		if (!Number.isFinite(latestAt)) return null
+
+		const expectedAt = latestAt + readingIntervalMs
+		const remainingMs = expectedAt - now
+		const absoluteSeconds = Math.ceil(Math.abs(remainingMs) / 1_000)
+		const minutes = Math.floor(absoluteSeconds / 60)
+		const seconds = String(absoluteSeconds % 60).padStart(2, "0")
+
+		return {
+			expectedAt,
+			isOverdue: remainingMs <= 0,
+			label:
+				remainingMs > 0
+					? `${minutes}:${seconds}`
+					: `${minutes}:${seconds} late`,
+			progress: Math.min(
+				100,
+				Math.max(0, ((now - latestAt) / readingIntervalMs) * 100),
+			),
+		}
+	}, [latest, now])
 	const chart = useMemo(() => {
 		const end = Date.now()
 		const start = new Date(end)
@@ -272,11 +347,33 @@ function App() {
 						</ResponsiveContainer>
 					)}
 				</div>
-				<p className="text-right text-[0.82rem] text-[#8fa49d]">
-					{latest
-						? `Last reading ${new Date(sampleTime(latest)).toLocaleString()}`
-						: "Waiting for data"}
-				</p>
+				<div className="flex items-center justify-between gap-4 text-[0.82rem] text-[#8fa49d] max-[520px]:items-start max-[520px]:flex-col">
+					<p>
+						{latest
+							? `Last reading ${new Date(sampleTime(latest)).toLocaleString()}`
+							: "Waiting for data"}
+					</p>
+					{nextReading && (
+						<div
+							className="flex items-center gap-2 text-[#f2c94c]"
+							title={`Estimated arrival ${new Date(nextReading.expectedAt).toLocaleString()}`}
+						>
+							<span
+								className={`relative size-4 shrink-0 rounded-full ${nextReading.isOverdue ? "animate-pulse" : ""}`}
+								style={{
+									background: `conic-gradient(#f2c94c ${nextReading.progress}%, #3e3a25 ${nextReading.progress}%)`,
+								}}
+							>
+								<span className="absolute inset-[3px] rounded-full bg-[#12211c]" />
+							</span>
+							<span className="tabular-nums">
+								{nextReading.isOverdue
+									? `Waiting for data · ${nextReading.label}`
+									: `New data in ${nextReading.label}`}
+							</span>
+						</div>
+					)}
+				</div>
 			</section>
 		</main>
 	)
