@@ -69,3 +69,15 @@ connectivity, and a custom PCB are outside V1.
 - The interface never fabricates missing readings.
 - Each device uses its own secret token. Secrets stay outside Git and D1, and the
   isolated device network requires only outbound HTTPS.
+
+## Caching
+
+The public UI requests the latest 288 samples, then filters that single response
+for the selected time range. The Worker caches this response so multiple visitors
+do not repeat the same D1 query.
+
+A successful device upload clears the cache in the Cloudflare location that
+receives it. Other Cloudflare locations may still hold an older copy, so every
+cached response also expires after 20 minutes. This matches the normal upload
+interval: it keeps D1 reads low while preventing a remote cache from remaining
+stale indefinitely.

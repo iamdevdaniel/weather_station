@@ -10,6 +10,7 @@ void i18n.use(initReactI18next).init({
 	resources: {
 		en: {
 			translation: {
+				language: "Language",
 				station: "Station 1",
 				balconyWeather: "Balcony weather",
 				live: "Live",
@@ -40,6 +41,7 @@ void i18n.use(initReactI18next).init({
 		},
 		es: {
 			translation: {
+				language: "Idioma",
 				station: "Estación 1",
 				balconyWeather: "Clima del balcón",
 				live: "En vivo",
