@@ -122,32 +122,54 @@ function App() {
 	}, [samples, timeRange])
 
 	return (
-		<main>
-			<header>
+		<main className="mx-auto w-[min(1080px,calc(100%-32px))] py-12 max-[680px]:w-[min(1080px,calc(100%-20px))] max-[680px]:py-7">
+			<header className="flex items-center justify-between gap-5 max-[680px]:flex-col max-[680px]:items-start">
 				<div>
-					<p className="eyebrow">Station 1</p>
-					<h1>Balcony weather</h1>
+					<p className="mb-1.5 text-[0.78rem] font-bold tracking-[0.14em] text-[#8fa49d] uppercase">
+						Station 1
+					</p>
+					<h1 className="text-[clamp(2rem,5vw,3.75rem)] tracking-[-0.055em]">
+						Balcony weather
+					</h1>
 				</div>
-				<div className="status">
-					<span className={error ? "dot error" : "dot"} />
+				<div className="flex items-center gap-2 text-[#bad0c8]">
+					<span
+						className={`size-2.5 rounded-full ${
+							error
+								? "bg-[#ff8a7a] shadow-[0_0_14px_#ff8a7a]"
+								: "bg-[#59d6a2] shadow-[0_0_14px_#59d6a2]"
+						}`}
+					/>
 					{error ? "Data unavailable" : "Live"}
 				</div>
 			</header>
 
 			{error && (
-				<div className="error-message">
+				<div className="mt-6 flex items-center justify-between gap-5 rounded-[10px] border border-[#6b3b36] bg-[rgba(18,33,28,0.88)] px-3.5 py-3 text-[#ffc4bc] shadow-[0_18px_60px_rgba(0,0,0,0.2)]">
 					<span>{error}</span>
-					<button type="button" onClick={() => void loadSamples()}>
+					<button
+						type="button"
+						className="cursor-pointer rounded-lg border border-[#345047] bg-[#13231e] px-3.5 py-2 text-[#eef8f4]"
+						onClick={() => void loadSamples()}
+					>
 						Retry
 					</button>
 				</div>
 			)}
 
-			<section className="cards" aria-label="Latest measurements">
+			<section
+				className="mt-10 mb-3 grid grid-cols-3 gap-3 max-[680px]:mt-7 max-[680px]:grid-cols-2"
+				aria-label="Latest measurements"
+			>
 				{metrics.map((metric) => (
-					<article className="card" key={metric.key}>
-						<p>{metric.label}</p>
-						<strong>
+					<article
+						className="rounded-xl border border-[#263a34] bg-[rgba(18,33,28,0.88)] p-5 shadow-[0_18px_60px_rgba(0,0,0,0.2)] max-[680px]:p-4"
+						key={metric.key}
+					>
+						<p className="mb-3 text-[0.9rem] text-[#8fa49d]">
+							{metric.label}
+						</p>
+						<strong className="text-[clamp(1.6rem,4vw,2.35rem)] tracking-[-0.04em]">
 							{loading && !latest
 								? "…"
 								: formatValue(
@@ -156,31 +178,35 @@ function App() {
 									)}
 							{latest?.[metric.key] !== null &&
 								latest?.[metric.key] !== undefined && (
-									<small>{metric.unit}</small>
+									<small className="ml-1.5 text-[0.85rem] font-medium tracking-normal text-[#8fa49d]">
+										{metric.unit}
+									</small>
 								)}
 						</strong>
 					</article>
 				))}
 			</section>
 
-			<section className="chart-panel">
-				<div className="chart-header">
+			<section className="rounded-[14px] border border-[#263a34] bg-[rgba(18,33,28,0.88)] p-[22px] shadow-[0_18px_60px_rgba(0,0,0,0.2)] max-[680px]:p-4">
+				<div className="flex items-center justify-between gap-5 max-[680px]:flex-col max-[680px]:items-start">
 					<div>
-						<p className="eyebrow">
+						<p className="mb-1.5 text-[0.78rem] font-bold tracking-[0.14em] text-[#8fa49d] uppercase">
 							{timeRange === "today" ? "Today" : "Last 4 hours"}
 						</p>
-						<h2>{selected.label}</h2>
+						<h2 className="text-2xl">{selected.label}</h2>
 					</div>
-					<div className="chart-controls">
+					<div className="flex items-center gap-2 max-[680px]:w-full max-[680px]:justify-between">
 						<fieldset
-							className="range-switch"
+							className="flex items-center gap-0 rounded-[10px] border border-[#345047] bg-[#0d1b17] p-[3px]"
 							aria-label="Chart time range"
 						>
 							<button
 								type="button"
-								className={
-									timeRange === "today" ? "active" : ""
-								}
+								className={`cursor-pointer rounded-lg border-0 px-2.5 py-1.5 ${
+									timeRange === "today"
+										? "bg-[#28483e] text-[#eef8f4]"
+										: "bg-transparent text-[#8fa49d]"
+								}`}
 								aria-pressed={timeRange === "today"}
 								onClick={() => setTimeRange("today")}
 							>
@@ -188,9 +214,11 @@ function App() {
 							</button>
 							<button
 								type="button"
-								className={
-									timeRange === "fourHours" ? "active" : ""
-								}
+								className={`cursor-pointer rounded-lg border-0 px-2.5 py-1.5 ${
+									timeRange === "fourHours"
+										? "bg-[#28483e] text-[#eef8f4]"
+										: "bg-transparent text-[#8fa49d]"
+								}`}
 								aria-pressed={timeRange === "fourHours"}
 								onClick={() => setTimeRange("fourHours")}
 							>
@@ -198,6 +226,7 @@ function App() {
 							</button>
 						</fieldset>
 						<select
+							className="rounded-lg border border-[#345047] bg-[#13231e] py-[9px] pr-[34px] pl-3 text-[#eef8f4]"
 							aria-label="Chart measurement"
 							value={selectedMetric}
 							onChange={(event) =>
@@ -215,9 +244,11 @@ function App() {
 					</div>
 				</div>
 
-				<div className="chart">
+				<div className="my-6 mb-3.5 h-[330px] max-[680px]:h-[280px]">
 					{chart.data.length === 0 && !loading ? (
-						<p className="empty">No readings in this range.</p>
+						<p className="grid h-full place-items-center text-[#8fa49d]">
+							No readings in this range.
+						</p>
 					) : (
 						<ResponsiveContainer width="100%" height="100%">
 							<LineChart
@@ -275,7 +306,7 @@ function App() {
 						</ResponsiveContainer>
 					)}
 				</div>
-				<p className="updated">
+				<p className="text-right text-[0.82rem] text-[#8fa49d]">
 					{latest
 						? `Last reading ${new Date(sampleTime(latest)).toLocaleString()}`
 						: "Waiting for data"}
