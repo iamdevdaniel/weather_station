@@ -27,6 +27,8 @@ type MetricKey = Exclude<
 	"bootId" | "sequence" | "capturedAt" | "receivedAt"
 >
 
+type TimeRange = "today" | "fourHours"
+
 const metrics: Array<{
 	key: MetricKey
 	label: string
@@ -58,13 +60,14 @@ function App() {
 	const [samples, setSamples] = useState<Sample[]>([])
 	const [selectedMetric, setSelectedMetric] =
 		useState<MetricKey>("temperatureC")
+	const [timeRange, setTimeRange] = useState<TimeRange>("today")
 	const [error, setError] = useState<string | null>(null)
 	const [loading, setLoading] = useState(true)
 
 	const loadSamples = useCallback(async () => {
 		try {
 			const response = await fetch(
-				"/api/v1/stations/station-1/samples?limit=120",
+				"/api/v1/stations/station-1/samples?limit=288",
 			)
 			if (!response.ok)
 				throw new Error(`Request failed (${response.status})`)
@@ -92,17 +95,31 @@ function App() {
 	const latest = samples.at(-1)
 	const selected =
 		metrics.find((metric) => metric.key === selectedMetric) ?? metrics[0]
-	const chartData = useMemo(
-		() =>
-			samples.map((sample) => ({
-				...sample,
-				time: new Date(sampleTime(sample)).toLocaleTimeString([], {
-					hour: "2-digit",
-					minute: "2-digit",
-				}),
-			})),
-		[samples],
-	)
+	const chart = useMemo(() => {
+		const end = Date.now()
+		const start = new Date(end)
+		if (timeRange === "today") {
+			start.setHours(0, 0, 0, 0)
+		} else {
+			start.setTime(end - 4 * 60 * 60 * 1000)
+		}
+
+		return {
+			start: start.getTime(),
+			end,
+			data: samples
+				.map((sample) => ({
+					...sample,
+					timestamp: new Date(sampleTime(sample)).getTime(),
+				}))
+				.filter(
+					(sample) =>
+						Number.isFinite(sample.timestamp) &&
+						sample.timestamp >= start.getTime() &&
+						sample.timestamp <= end,
+				),
+		}
+	}, [samples, timeRange])
 
 	return (
 		<main>
@@ -149,31 +166,62 @@ function App() {
 			<section className="chart-panel">
 				<div className="chart-header">
 					<div>
-						<p className="eyebrow">Recent readings</p>
+						<p className="eyebrow">
+							{timeRange === "today" ? "Today" : "Last 4 hours"}
+						</p>
 						<h2>{selected.label}</h2>
 					</div>
-					<select
-						aria-label="Chart measurement"
-						value={selectedMetric}
-						onChange={(event) =>
-							setSelectedMetric(event.target.value as MetricKey)
-						}
-					>
-						{metrics.map((metric) => (
-							<option key={metric.key} value={metric.key}>
-								{metric.label}
-							</option>
-						))}
-					</select>
+					<div className="chart-controls">
+						<fieldset
+							className="range-switch"
+							aria-label="Chart time range"
+						>
+							<button
+								type="button"
+								className={
+									timeRange === "today" ? "active" : ""
+								}
+								aria-pressed={timeRange === "today"}
+								onClick={() => setTimeRange("today")}
+							>
+								Today
+							</button>
+							<button
+								type="button"
+								className={
+									timeRange === "fourHours" ? "active" : ""
+								}
+								aria-pressed={timeRange === "fourHours"}
+								onClick={() => setTimeRange("fourHours")}
+							>
+								4 hours
+							</button>
+						</fieldset>
+						<select
+							aria-label="Chart measurement"
+							value={selectedMetric}
+							onChange={(event) =>
+								setSelectedMetric(
+									event.target.value as MetricKey,
+								)
+							}
+						>
+							{metrics.map((metric) => (
+								<option key={metric.key} value={metric.key}>
+									{metric.label}
+								</option>
+							))}
+						</select>
+					</div>
 				</div>
 
 				<div className="chart">
-					{samples.length === 0 && !loading ? (
-						<p className="empty">No readings yet.</p>
+					{chart.data.length === 0 && !loading ? (
+						<p className="empty">No readings in this range.</p>
 					) : (
 						<ResponsiveContainer width="100%" height="100%">
 							<LineChart
-								data={chartData}
+								data={chart.data}
 								margin={{ left: 0, right: 12 }}
 							>
 								<CartesianGrid
@@ -181,9 +229,18 @@ function App() {
 									vertical={false}
 								/>
 								<XAxis
-									dataKey="time"
+									dataKey="timestamp"
+									type="number"
+									scale="time"
+									domain={[chart.start, chart.end]}
 									minTickGap={34}
 									stroke="#8fa49d"
+									tickFormatter={(value) =>
+										new Date(value).toLocaleTimeString([], {
+											hour: "2-digit",
+											minute: "2-digit",
+										})
+									}
 								/>
 								<YAxis
 									domain={["auto", "auto"]}
@@ -193,6 +250,9 @@ function App() {
 									}
 								/>
 								<Tooltip
+									labelFormatter={(value) =>
+										new Date(Number(value)).toLocaleString()
+									}
 									formatter={(value) => [
 										`${Number(value).toFixed(selected.digits)} ${selected.unit}`,
 										selected.label,

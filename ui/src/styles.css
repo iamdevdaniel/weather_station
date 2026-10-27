@@ -132,6 +132,21 @@ h2 {
 	border-radius: 14px;
 }
 
+.chart-controls,
+.range-switch {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.range-switch {
+	gap: 0;
+	padding: 3px;
+	border: 1px solid #345047;
+	border-radius: 10px;
+	background: #0d1b17;
+}
+
 select,
 button {
 	border: 1px solid #345047;
@@ -147,6 +162,18 @@ select {
 button {
 	padding: 8px 14px;
 	cursor: pointer;
+}
+
+.range-switch button {
+	padding: 6px 10px;
+	border: 0;
+	background: transparent;
+	color: #8fa49d;
+}
+
+.range-switch button.active {
+	background: #28483e;
+	color: #eef8f4;
 }
 
 .chart {
@@ -197,5 +224,15 @@ button {
 
 	.chart {
 		height: 280px;
+	}
+
+	.chart-header {
+		align-items: flex-start;
+		flex-direction: column;
+	}
+
+	.chart-controls {
+		width: 100%;
+		justify-content: space-between;
 	}
 }
