@@ -48,10 +48,6 @@ const metrics: Array<{
 	{ key: "batteryVoltageV", label: "Battery", unit: "V", digits: 2 },
 ]
 
-function formatValue(value: number | null, digits: number) {
-	return value === null ? "—" : value.toFixed(digits)
-}
-
 function sampleTime(sample: Sample) {
 	return sample.capturedAt ?? sample.receivedAt
 }
@@ -157,37 +153,7 @@ function App() {
 				</div>
 			)}
 
-			<section
-				className="mt-10 mb-3 grid grid-cols-3 gap-3 max-[680px]:mt-7 max-[680px]:grid-cols-2"
-				aria-label="Latest measurements"
-			>
-				{metrics.map((metric) => (
-					<article
-						className="rounded-xl border border-[#263a34] bg-[rgba(18,33,28,0.88)] p-5 shadow-[0_18px_60px_rgba(0,0,0,0.2)] max-[680px]:p-4"
-						key={metric.key}
-					>
-						<p className="mb-3 text-[0.9rem] text-[#8fa49d]">
-							{metric.label}
-						</p>
-						<strong className="text-[clamp(1.6rem,4vw,2.35rem)] tracking-[-0.04em]">
-							{loading && !latest
-								? "…"
-								: formatValue(
-										latest?.[metric.key] ?? null,
-										metric.digits,
-									)}
-							{latest?.[metric.key] !== null &&
-								latest?.[metric.key] !== undefined && (
-									<small className="ml-1.5 text-[0.85rem] font-medium tracking-normal text-[#8fa49d]">
-										{metric.unit}
-									</small>
-								)}
-						</strong>
-					</article>
-				))}
-			</section>
-
-			<section className="rounded-[14px] border border-[#263a34] bg-[rgba(18,33,28,0.88)] p-[22px] shadow-[0_18px_60px_rgba(0,0,0,0.2)] max-[680px]:p-4">
+			<section className="mt-10 rounded-[14px] border border-[#263a34] bg-[rgba(18,33,28,0.88)] p-[22px] shadow-[0_18px_60px_rgba(0,0,0,0.2)] max-[680px]:mt-7 max-[680px]:p-4">
 				<div className="flex items-center justify-between gap-5 max-[680px]:flex-col max-[680px]:items-start">
 					<div>
 						<p className="mb-1.5 text-[0.78rem] font-bold tracking-[0.14em] text-[#8fa49d] uppercase">
