@@ -59,3 +59,15 @@ HTTPS only, so the isolated device network does not need inbound access or port
 forwarding. OTA downloads a server-advertised firmware image only after a
 successful upload and verifies its SHA-256 hash before installation. USB remains
 the recovery path for firmware that cannot connect or run OTA.
+
+## Caching
+
+The public UI requests the latest 288 samples, then filters that single response
+for the selected time range. The Worker caches this response so multiple visitors
+do not repeat the same D1 query.
+
+A successful device upload clears the cache in the Cloudflare location that
+receives it. Other Cloudflare locations may still hold an older copy, so every
+cached response also expires after 20 minutes. This matches the normal upload
+interval: it keeps D1 reads low while preventing a remote cache from remaining
+stale indefinitely.

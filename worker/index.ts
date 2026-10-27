@@ -2,9 +2,10 @@ import { Hono } from "hono"
 import type { Env } from "./contracts"
 import { errorResponse } from "./http-response"
 import { limitPublicApi, protectDeviceApi } from "./middleware.security"
+import { getCachedStationSamples } from "./service.cache"
 import { downloadFirmware } from "./service.firmware"
 import { receiveDeviceHealth } from "./service.health"
-import { getCurrentStation, getStationSamples } from "./service.station"
+import { getCurrentStation } from "./service.station"
 import { receiveUpload } from "./service.upload"
 
 const app = new Hono<{ Bindings: Env }>()
@@ -13,7 +14,7 @@ app.get("/api/v1/health", (context) => context.json({ ok: true }))
 
 app.use("/api/v1/uploads", protectDeviceApi)
 app.post("/api/v1/uploads", (context) =>
-	receiveUpload(context.req.raw, context.env),
+	receiveUpload(context.req.raw, context.env, context.executionCtx),
 )
 
 app.use("/api/v1/device-health", protectDeviceApi)
@@ -35,10 +36,12 @@ app.get("/api/v1/stations/:stationId/current", (context) =>
 	getCurrentStation(context.env, context.req.param("stationId")),
 )
 app.get("/api/v1/stations/:stationId/samples", (context) =>
-	getStationSamples(
+	getCachedStationSamples(
+		context.req.raw,
 		context.env,
 		context.req.param("stationId"),
 		context.req.query("limit"),
+		context.executionCtx,
 	),
 )
 

@@ -3,8 +3,11 @@ import type { StationConfig } from "./contracts"
 export function findStation(database: D1Database, stationId: string) {
 	return database
 		.prepare(
-			`SELECT id, display_name, sample_interval_seconds,
-			        upload_interval_seconds, last_seen_at
+			`SELECT id,
+			        display_name AS displayName,
+			        sample_interval_seconds AS sampleIntervalSeconds,
+			        upload_interval_seconds AS uploadIntervalSeconds,
+			        last_seen_at AS lastSeenAt
 			 FROM stations
 			 WHERE id = ?`,
 		)

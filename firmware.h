@@ -18,6 +18,7 @@ constexpr uint8_t SCL_PIN = D1;
 constexpr uint8_t MUX_SELECT = D3;
 constexpr uint8_t ANALOG_INPUT = A0;
 
+// First-boot fallbacks. Successful uploads replace these with D1 station config.
 constexpr uint32_t DEFAULT_SAMPLE_SECONDS = 300;
 constexpr uint32_t DEFAULT_UPLOAD_SECONDS = 1200;
 constexpr uint32_t MICROPHONE_SAMPLE_MS = 250;

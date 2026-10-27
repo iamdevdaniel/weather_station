@@ -31,8 +31,10 @@
 	},
 	"dependencies": {
 		"hono": "^4.13.13",
+		"i18next": "^26.5.11",
 		"react": "^19.3.1",
 		"react-dom": "^19.3.1",
+		"react-i18next": "^17.1.9",
 		"recharts": "^3.10.1"
 	},
 	"lint-staged": {

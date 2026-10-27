@@ -7,10 +7,19 @@ import {
 import { errorResponse, jsonResponse } from "./http-response"
 import { findStationConfig } from "./repository.station"
 import { findExistingUpload, storeUpload } from "./repository.upload"
+import { invalidateSamplesCache } from "./service.cache"
 import { findFirmwareUpdate } from "./service.firmware"
 import { validateUpload } from "./validation.upload"
 
-export async function receiveUpload(request: Request, env: Env) {
+interface WaitUntilContext {
+	waitUntil(promise: Promise<unknown>): void
+}
+
+export async function receiveUpload(
+	request: Request,
+	env: Env,
+	executionCtx: WaitUntilContext,
+) {
 	const contentLength = request.headers.get("content-length")
 	if (contentLength !== null && Number(contentLength) > MAX_UPLOAD_BYTES) {
 		return errorResponse(
@@ -88,6 +97,7 @@ export async function receiveUpload(request: Request, env: Env) {
 
 	const receivedAt = new Date().toISOString()
 	await storeUpload(env.DB, upload, receivedAt)
+	invalidateSamplesCache(origin, upload.stationId, executionCtx)
 
 	return uploadResponse(
 		upload.uploadId,
