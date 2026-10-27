@@ -11,15 +11,7 @@ import { invalidateSamplesCache } from "./service.cache"
 import { findFirmwareUpdate } from "./service.firmware"
 import { validateUpload } from "./validation.upload"
 
-interface WaitUntilContext {
-	waitUntil(promise: Promise<unknown>): void
-}
-
-export async function receiveUpload(
-	request: Request,
-	env: Env,
-	executionCtx: WaitUntilContext,
-) {
+export async function receiveUpload(request: Request, env: Env) {
 	const contentLength = request.headers.get("content-length")
 	if (contentLength !== null && Number(contentLength) > MAX_UPLOAD_BYTES) {
 		return errorResponse(
@@ -97,7 +89,7 @@ export async function receiveUpload(
 
 	const receivedAt = new Date().toISOString()
 	await storeUpload(env.DB, upload, receivedAt)
-	invalidateSamplesCache(origin, upload.stationId, executionCtx)
+	await invalidateSamplesCache(upload.stationId)
 
 	return uploadResponse(
 		upload.uploadId,

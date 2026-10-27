@@ -14,7 +14,7 @@ app.get("/api/v1/health", (context) => context.json({ ok: true }))
 
 app.use("/api/v1/uploads", protectDeviceApi)
 app.post("/api/v1/uploads", (context) =>
-	receiveUpload(context.req.raw, context.env, context.executionCtx),
+	receiveUpload(context.req.raw, context.env),
 )
 
 app.use("/api/v1/device-health", protectDeviceApi)
@@ -37,11 +37,9 @@ app.get("/api/v1/stations/:stationId/current", (context) =>
 )
 app.get("/api/v1/stations/:stationId/samples", (context) =>
 	getCachedStationSamples(
-		context.req.raw,
 		context.env,
 		context.req.param("stationId"),
 		context.req.query("limit"),
-		context.executionCtx,
 	),
 )
 
