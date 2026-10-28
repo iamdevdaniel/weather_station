@@ -1,0 +1,41 @@
+name: Feature
+description: Describe a user need and the outcome that would solve it.
+title: "[Feature]: "
+labels:
+  - feature
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or opportunity
+      description: Who is affected, and what can they not do today?
+      placeholder: A visitor cannot tell whether the station is delayed or the page is showing old data.
+    validations:
+      required: true
+
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Desired outcome
+      description: Describe what should be different for the user. Avoid prescribing the technical implementation.
+      placeholder: Visitors can clearly distinguish delayed station data from a stale page.
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: List observable conditions that would make this feature complete.
+      placeholder: |
+        - The page shows when the latest reading was received.
+        - A delayed station is visually different from stale page data.
+        - The wording works in English and Spanish.
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: Optional examples, screenshots, constraints, or related issues.
