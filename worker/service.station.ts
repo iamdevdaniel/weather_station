@@ -1,4 +1,4 @@
-import { PUBLIC_SAMPLES_MAX_LIMIT } from "../shared/config"
+import { PUBLIC_SAMPLES_ALLOWED_LIMITS } from "../shared/config"
 import type { Env } from "./contracts"
 import { errorResponse, jsonResponse } from "./http-response"
 import {
@@ -34,10 +34,17 @@ export async function getStationSamples(
 			"Station is not registered",
 		)
 
-	const parsedLimit = Number.parseInt(requestedLimit ?? "120", 10)
-	const limit = Number.isFinite(parsedLimit)
-		? Math.min(Math.max(parsedLimit, 1), PUBLIC_SAMPLES_MAX_LIMIT)
-		: 120
+	const limitText = requestedLimit ?? "120"
+	if (!/^\d+$/.test(limitText))
+		return errorResponse(400, "invalid_limit", "Unsupported sample limit")
+
+	const limit = Number(limitText)
+	if (
+		String(limit) !== limitText ||
+		!(PUBLIC_SAMPLES_ALLOWED_LIMITS as readonly number[]).includes(limit)
+	)
+		return errorResponse(400, "invalid_limit", "Unsupported sample limit")
+
 	const result = await findRecentSamples(env.DB, stationId, limit)
 
 	return jsonResponse({ station, samples: result.results.reverse() })
