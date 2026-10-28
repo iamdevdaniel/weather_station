@@ -1,4 +1,4 @@
-import { PUBLIC_SAMPLES_LIMIT } from "../shared/config"
+import { PUBLIC_SAMPLES_MAX_LIMIT } from "../shared/config"
 import type { Env } from "./contracts"
 import { errorResponse, jsonResponse } from "./http-response"
 import {
@@ -36,7 +36,7 @@ export async function getStationSamples(
 
 	const parsedLimit = Number.parseInt(requestedLimit ?? "120", 10)
 	const limit = Number.isFinite(parsedLimit)
-		? Math.min(Math.max(parsedLimit, 1), PUBLIC_SAMPLES_LIMIT)
+		? Math.min(Math.max(parsedLimit, 1), PUBLIC_SAMPLES_MAX_LIMIT)
 		: 120
 	const result = await findRecentSamples(env.DB, stationId, limit)
 

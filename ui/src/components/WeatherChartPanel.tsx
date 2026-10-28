@@ -10,16 +10,19 @@ type Props = {
 	samples: Sample[]
 	loading: boolean
 	uploadIntervalSeconds: number | null
+	timeRange: TimeRange
+	onTimeRangeChange: (range: TimeRange) => void
 }
 
 export function WeatherChartPanel({
 	samples,
 	loading,
 	uploadIntervalSeconds,
+	timeRange,
+	onTimeRangeChange,
 }: Props) {
 	const [selectedMetric, setSelectedMetric] =
 		useState<MetricKey>("temperatureC")
-	const [timeRange, setTimeRange] = useState<TimeRange>("today")
 	const selected =
 		metrics.find((metric) => metric.key === selectedMetric) ?? metrics[0]
 	const chart = useMemo(
@@ -34,7 +37,7 @@ export function WeatherChartPanel({
 				selectedMetric={selectedMetric}
 				timeRange={timeRange}
 				onMetricChange={setSelectedMetric}
-				onTimeRangeChange={setTimeRange}
+				onTimeRangeChange={onTimeRangeChange}
 			/>
 			<ReadingChart
 				data={chart.data}

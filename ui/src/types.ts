@@ -16,7 +16,7 @@ export type MetricKey = Exclude<
 	"bootId" | "sequence" | "capturedAt" | "receivedAt"
 >
 
-export type TimeRange = "today" | "fourHours"
+export type TimeRange = "today" | "fourHours" | "fiveDays"
 
 export type StationSamplesResponse = {
 	station: { uploadIntervalSeconds: number }

@@ -9,7 +9,8 @@ export function chartSamples(samples: Sample[], timeRange: TimeRange) {
 	const start = new Date(end)
 
 	if (timeRange === "today") start.setHours(0, 0, 0, 0)
-	else start.setTime(end - 4 * 60 * 60 * 1_000)
+	else if (timeRange === "fourHours") start.setTime(end - 4 * 60 * 60 * 1_000)
+	else start.setTime(end - 5 * 24 * 60 * 60 * 1_000)
 
 	const startMs = start.getTime()
 	return {

@@ -1,6 +1,7 @@
 import { cache } from "cloudflare:workers"
 import {
 	PUBLIC_SAMPLES_CACHE_SECONDS,
+	PUBLIC_SAMPLES_FIVE_DAYS_LIMIT,
 	PUBLIC_SAMPLES_LIMIT,
 } from "../shared/config"
 import type { Env } from "./contracts"
@@ -16,7 +17,11 @@ export async function getCachedStationSamples(
 	requestedLimit: string | undefined,
 ) {
 	const response = await getStationSamples(env, stationId, requestedLimit)
-	if (!response.ok || requestedLimit !== String(PUBLIC_SAMPLES_LIMIT))
+	const cacheableLimits = new Set([
+		String(PUBLIC_SAMPLES_LIMIT),
+		String(PUBLIC_SAMPLES_FIVE_DAYS_LIMIT),
+	])
+	if (!response.ok || !requestedLimit || !cacheableLimits.has(requestedLimit))
 		return response
 
 	const cacheable = new Response(response.body, response)

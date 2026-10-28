@@ -18,12 +18,18 @@ export function ChartControls({
 	onTimeRangeChange,
 }: Props) {
 	const { t } = useTranslation()
+	const rangeLabel =
+		timeRange === "today"
+			? t("today")
+			: timeRange === "fourHours"
+				? t("lastFourHours")
+				: t("lastFiveDays")
 
 	return (
 		<div className="flex items-center justify-between gap-5 max-[680px]:flex-col max-[680px]:items-start">
 			<div>
 				<p className="mb-1.5 text-[0.78rem] font-bold tracking-[0.14em] text-[#8fa49d] uppercase">
-					{timeRange === "today" ? t("today") : t("lastFourHours")}
+					{rangeLabel}
 				</p>
 				<h2 className="text-2xl">{t(selected.labelKey)}</h2>
 			</div>
@@ -43,6 +49,12 @@ export function ChartControls({
 						onClick={() => onTimeRangeChange("fourHours")}
 					>
 						{t("fourHours")}
+					</RangeButton>
+					<RangeButton
+						active={timeRange === "fiveDays"}
+						onClick={() => onTimeRangeChange("fiveDays")}
+					>
+						{t("fiveDays")}
 					</RangeButton>
 				</fieldset>
 				<select

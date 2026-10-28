@@ -1,11 +1,15 @@
 import { useCallback, useEffect, useMemo, useState } from "react"
-import { PUBLIC_SAMPLES_LIMIT, STATION_ID } from "../../../shared/config"
+import {
+	PUBLIC_SAMPLES_FIVE_DAYS_LIMIT,
+	PUBLIC_SAMPLES_LIMIT,
+	STATION_ID,
+} from "../../../shared/config"
 import { sampleTime } from "../lib/samples"
-import type { Sample, StationSamplesResponse } from "../types"
+import type { Sample, StationSamplesResponse, TimeRange } from "../types"
 
 const fallbackPollMs = 60_000
 
-export function useStationSamples() {
+export function useStationSamples(timeRange: TimeRange) {
 	const [samples, setSamples] = useState<Sample[]>([])
 	const [uploadIntervalSeconds, setUploadIntervalSeconds] = useState<
 		number | null
@@ -15,8 +19,12 @@ export function useStationSamples() {
 
 	const reload = useCallback(async () => {
 		try {
+			const limit =
+				timeRange === "fiveDays"
+					? PUBLIC_SAMPLES_FIVE_DAYS_LIMIT
+					: PUBLIC_SAMPLES_LIMIT
 			const response = await fetch(
-				`/api/v1/stations/${STATION_ID}/samples?limit=${PUBLIC_SAMPLES_LIMIT}`,
+				`/api/v1/stations/${STATION_ID}/samples?limit=${limit}`,
 			)
 			if (!response.ok) throw new Error(String(response.status))
 
@@ -33,9 +41,10 @@ export function useStationSamples() {
 		} finally {
 			setLoading(false)
 		}
-	}, [])
+	}, [timeRange])
 
 	useEffect(() => {
+		setLoading(true)
 		void reload()
 	}, [reload])
 
