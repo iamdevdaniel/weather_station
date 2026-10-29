@@ -31,7 +31,7 @@ export function WeatherChartPanel({
 	)
 
 	return (
-		<section className="mt-10 rounded-[14px] border border-[#263a34] bg-[rgba(18,33,28,0.88)] p-[22px] shadow-[0_18px_60px_rgba(0,0,0,0.2)] max-[680px]:mt-7 max-[680px]:p-4">
+		<section className="weather-panel">
 			<ChartControls
 				selected={selected}
 				selectedMetric={selectedMetric}

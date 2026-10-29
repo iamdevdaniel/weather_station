@@ -26,16 +26,14 @@ export function ChartControls({
 				: t("lastFiveDays")
 
 	return (
-		<div className="flex items-center justify-between gap-5 max-[680px]:flex-col max-[680px]:items-start">
+		<div className="chart-controls">
 			<div>
-				<p className="mb-1.5 text-[0.78rem] font-bold tracking-[0.14em] text-[#8fa49d] uppercase">
-					{rangeLabel}
-				</p>
-				<h2 className="text-2xl">{t(selected.labelKey)}</h2>
+				<p className="eyebrow">{rangeLabel}</p>
+				<h2 className="metric-title">{t(selected.labelKey)}</h2>
 			</div>
-			<div className="flex items-center gap-2 max-[680px]:w-full max-[680px]:justify-between">
+			<div className="chart-actions">
 				<fieldset
-					className="flex items-center gap-0 rounded-[10px] border border-[#345047] bg-[#0d1b17] p-[3px]"
+					className="range-control"
 					aria-label={t("chartTimeRange")}
 				>
 					<RangeButton
@@ -58,7 +56,7 @@ export function ChartControls({
 					</RangeButton>
 				</fieldset>
 				<select
-					className="rounded-lg border border-[#345047] bg-[#13231e] py-[9px] pr-[34px] pl-3 text-[#eef8f4]"
+					className="metric-select"
 					aria-label={t("chartMeasurement")}
 					value={selectedMetric}
 					onChange={(event) =>
@@ -86,11 +84,8 @@ function RangeButton({ active, children, onClick }: RangeButtonProps) {
 	return (
 		<button
 			type="button"
-			className={`cursor-pointer rounded-lg border-0 px-2.5 py-1.5 ${
-				active
-					? "bg-[#28483e] text-[#eef8f4]"
-					: "bg-transparent text-[#8fa49d]"
-			}`}
+			className="range-button"
+			data-active={active}
 			aria-pressed={active}
 			onClick={onClick}
 		>

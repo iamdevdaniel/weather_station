@@ -13,7 +13,7 @@ export function FiveDayAxisTick({ x, y, payload, language }: Props) {
 	const label = formatFiveDayDate(timestamp, language)
 	return (
 		<g transform={`translate(${x},${y})`}>
-			<text fill="#8fa49d" textAnchor="middle">
+			<text fill="#bba995" textAnchor="middle">
 				<tspan x="0" dy="0.9em">
 					{label}
 				</tspan>

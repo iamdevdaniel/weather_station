@@ -11,9 +11,10 @@ type Props = {
 export function ReadingStatus({ latest, uploadIntervalSeconds }: Props) {
 	const { t, i18n } = useTranslation()
 	const nextReading = useNextReading(latest, uploadIntervalSeconds)
+	const countdownState = nextReading?.isOverdue ? "delayed" : "live"
 
 	return (
-		<div className="flex items-center justify-between gap-4 text-[0.82rem] text-[#8fa49d] max-[520px]:items-start max-[520px]:flex-col">
+		<div className="reading-status">
 			<p>
 				{latest
 					? t("lastReading", {
@@ -25,7 +26,8 @@ export function ReadingStatus({ latest, uploadIntervalSeconds }: Props) {
 			</p>
 			{nextReading && (
 				<div
-					className="flex items-center gap-2 text-[#f2c94c]"
+					className="next-reading"
+					data-state={countdownState}
 					title={t("estimatedArrival", {
 						date: new Date(nextReading.expectedAt).toLocaleString(
 							i18n.resolvedLanguage,
@@ -33,13 +35,11 @@ export function ReadingStatus({ latest, uploadIntervalSeconds }: Props) {
 					})}
 				>
 					<span
-						className={`relative size-4 shrink-0 rounded-full ${nextReading.isOverdue ? "animate-pulse" : ""}`}
+						className={`countdown-ring ${nextReading.isOverdue ? "animate-pulse" : ""}`}
 						style={{
-							background: `conic-gradient(#f2c94c ${nextReading.progress}%, #3e3a25 ${nextReading.progress}%)`,
+							background: `conic-gradient(currentColor ${nextReading.progress}%, #4d4234 ${nextReading.progress}%)`,
 						}}
-					>
-						<span className="absolute inset-[3px] rounded-full bg-[#12211c]" />
-					</span>
+					/>
 					<span className="tabular-nums">
 						{nextReading.isOverdue
 							? t("waitingLate", { time: nextReading.label })

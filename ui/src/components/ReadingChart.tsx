@@ -42,15 +42,13 @@ export function ReadingChart({
 	)
 
 	return (
-		<div className="my-6 mb-3.5 h-[330px] max-[680px]:h-[280px]">
+		<div className="chart-stage">
 			{data.length === 0 && !loading ? (
-				<p className="grid h-full place-items-center text-[#8fa49d]">
-					{t("noReadings")}
-				</p>
+				<p className="empty-chart">{t("noReadings")}</p>
 			) : (
 				<ResponsiveContainer width="100%" height="100%">
 					<LineChart data={data} margin={{ left: 0, right: 12 }}>
-						<CartesianGrid stroke="#263a34" vertical={false} />
+						<CartesianGrid stroke="#43382d" vertical={false} />
 						<XAxis
 							dataKey="timestamp"
 							type="number"
@@ -58,7 +56,7 @@ export function ReadingChart({
 							domain={[start, end]}
 							height={30}
 							minTickGap={34}
-							stroke="#8fa49d"
+							stroke="#bba995"
 							tick={
 								timeRange === "fiveDays"
 									? fiveDayTick
@@ -71,7 +69,10 @@ export function ReadingChart({
 						/>
 						<YAxis
 							domain={["auto", "auto"]}
-							stroke="#8fa49d"
+							stroke="#bba995"
+							tickFormatter={(value: number) =>
+								value.toFixed(selected.axisDigits)
+							}
 							unit={selected.unit === "°C" ? "°" : undefined}
 						/>
 						<Tooltip
@@ -85,16 +86,18 @@ export function ReadingChart({
 								t(selected.labelKey),
 							]}
 							contentStyle={{
-								background: "#13231e",
-								border: "1px solid #345047",
-								borderRadius: "8px",
+								background: "#211b16",
+								border: "2px solid #f5e8d4",
+								borderRadius: "12px",
+								boxShadow: "4px 4px 0 #050403",
+								color: "#f5e8d4",
 							}}
 						/>
 						<Line
 							type="monotone"
 							dataKey={selectedMetric}
-							stroke="#59d6a2"
-							strokeWidth={2}
+							stroke="#ff592d"
+							strokeWidth={3}
 							dot={false}
 							connectNulls={false}
 						/>
