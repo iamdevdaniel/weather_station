@@ -46,6 +46,7 @@ export function WeatherChartPanel({
 				loading={loading}
 				selected={selected}
 				selectedMetric={selectedMetric}
+				timeRange={timeRange}
 			/>
 			<ReadingStatus
 				latest={samples.at(-1)}

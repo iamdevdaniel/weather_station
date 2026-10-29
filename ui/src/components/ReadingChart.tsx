@@ -6,10 +6,13 @@ import {
 	ResponsiveContainer,
 	Tooltip,
 	XAxis,
+	type XAxisTickContentProps,
 	YAxis,
 } from "recharts"
+import { chartTickValues, formatChartTick } from "../lib/chartTimeAxis"
 import type { Metric } from "../lib/metrics"
-import type { MetricKey, Sample } from "../types"
+import type { MetricKey, Sample, TimeRange } from "../types"
+import { FiveDayAxisTick } from "./FiveDayAxisTick"
 
 type ChartSample = Sample & { timestamp: number }
 
@@ -20,6 +23,7 @@ type Props = {
 	loading: boolean
 	selected: Metric
 	selectedMetric: MetricKey
+	timeRange: TimeRange
 }
 
 export function ReadingChart({
@@ -29,8 +33,13 @@ export function ReadingChart({
 	loading,
 	selected,
 	selectedMetric,
+	timeRange,
 }: Props) {
 	const { t, i18n } = useTranslation()
+	const ticks = chartTickValues(data, start, end, timeRange)
+	const fiveDayTick = (props: XAxisTickContentProps) => (
+		<FiveDayAxisTick {...props} language={i18n.resolvedLanguage} />
+	)
 
 	return (
 		<div className="my-6 mb-3.5 h-[330px] max-[680px]:h-[280px]">
@@ -47,13 +56,17 @@ export function ReadingChart({
 							type="number"
 							scale="time"
 							domain={[start, end]}
+							height={30}
 							minTickGap={34}
 							stroke="#8fa49d"
+							tick={
+								timeRange === "fiveDays"
+									? fiveDayTick
+									: undefined
+							}
+							ticks={ticks}
 							tickFormatter={(value) =>
-								new Date(value).toLocaleTimeString(
-									i18n.resolvedLanguage,
-									{ hour: "2-digit", minute: "2-digit" },
-								)
+								formatChartTick(value, i18n.resolvedLanguage)
 							}
 						/>
 						<YAxis
