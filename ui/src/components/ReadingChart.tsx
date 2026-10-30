@@ -71,7 +71,11 @@ export function ReadingChart({
 							domain={["auto", "auto"]}
 							stroke="#bba995"
 							tickFormatter={(value: number) =>
-								value.toFixed(selected.axisDigits)
+								value.toFixed(
+									selectedMetric === "batteryVoltageV"
+										? 2
+										: 0,
+								)
 							}
 							unit={selected.unit === "°C" ? "°" : undefined}
 						/>
