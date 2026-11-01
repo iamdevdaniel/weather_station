@@ -9,6 +9,7 @@ import {
 	type XAxisTickContentProps,
 	YAxis,
 } from "recharts"
+import { useIsMobile } from "../hooks/useIsMobile"
 import { chartTickValues, formatChartTick } from "../lib/chartTimeAxis"
 import type { Metric } from "../lib/metrics"
 import type { MetricKey, Sample, TimeRange } from "../types"
@@ -36,7 +37,8 @@ export function ReadingChart({
 	timeRange,
 }: Props) {
 	const { t, i18n } = useTranslation()
-	const ticks = chartTickValues(data, start, end, timeRange)
+	const isMobile = useIsMobile()
+	const ticks = chartTickValues(data, start, end, timeRange, isMobile ? 4 : 7)
 	const fiveDayTick = (props: XAxisTickContentProps) => (
 		<FiveDayAxisTick {...props} language={i18n.resolvedLanguage} />
 	)
