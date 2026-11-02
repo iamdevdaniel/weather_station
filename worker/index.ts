@@ -9,6 +9,34 @@ import { getCurrentStation } from "./service.station"
 import { receiveUpload } from "./service.upload"
 
 const app = new Hono<{ Bindings: Env }>()
+const DEVICE_HOST = "weather-station-api.maydanachi.workers.dev"
+const PUBLIC_HOST = "weather.danielmaydana.com"
+
+function isDeviceRoute(pathname: string) {
+	return (
+		pathname === "/api/v1/uploads" ||
+		pathname === "/api/v1/device-health" ||
+		pathname.startsWith("/api/v1/firmware/")
+	)
+}
+
+function hostRestrictedResponse() {
+	const response = errorResponse(404, "not_found", "Route not found")
+	response.headers.set("Cache-Control", "private, no-store")
+	return response
+}
+
+app.use("*", async (context, next) => {
+	const url = new URL(context.req.url)
+	const deviceRoute = isDeviceRoute(context.req.path)
+
+	if (url.hostname === DEVICE_HOST && !deviceRoute)
+		return hostRestrictedResponse()
+	if (url.hostname === PUBLIC_HOST && deviceRoute)
+		return hostRestrictedResponse()
+
+	await next()
+})
 
 app.get("/api/v1/health", (context) => context.json({ ok: true }))
 

@@ -11,6 +11,7 @@ import {
 } from "recharts"
 import { useIsMobile } from "../hooks/useIsMobile"
 import { chartTickValues, formatChartTick } from "../lib/chartTimeAxis"
+import { temperatureYAxis } from "../lib/chartValueAxis"
 import type { Metric } from "../lib/metrics"
 import type { MetricKey, Sample, TimeRange } from "../types"
 import { FiveDayAxisTick } from "./FiveDayAxisTick"
@@ -39,6 +40,8 @@ export function ReadingChart({
 	const { t, i18n } = useTranslation()
 	const isMobile = useIsMobile()
 	const ticks = chartTickValues(data, start, end, timeRange, isMobile ? 4 : 7)
+	const temperatureAxis =
+		selectedMetric === "temperatureC" ? temperatureYAxis(data) : undefined
 	const fiveDayTick = (props: XAxisTickContentProps) => (
 		<FiveDayAxisTick {...props} language={i18n.resolvedLanguage} />
 	)
@@ -49,8 +52,15 @@ export function ReadingChart({
 				<p className="empty-chart">{t("noReadings")}</p>
 			) : (
 				<ResponsiveContainer width="100%" height="100%">
-					<LineChart data={data} margin={{ left: 0, right: 12 }}>
-						<CartesianGrid stroke="#43382d" vertical={false} />
+					<LineChart
+						data={data}
+						margin={{ top: 10, left: 0, right: 12 }}
+					>
+						<CartesianGrid
+							stroke="#43382d"
+							vertical={false}
+							horizontalValues={temperatureAxis?.majorTicks}
+						/>
 						<XAxis
 							dataKey="timestamp"
 							type="number"
@@ -70,16 +80,21 @@ export function ReadingChart({
 							}
 						/>
 						<YAxis
-							domain={["auto", "auto"]}
+							domain={temperatureAxis?.domain ?? ["auto", "auto"]}
+							interval={temperatureAxis ? 0 : undefined}
 							stroke="#bba995"
-							tickFormatter={(value: number) =>
-								value.toFixed(
+							ticks={temperatureAxis?.ticks}
+							tickFormatter={(value: number) => {
+								if (selectedMetric === "temperatureC") {
+									return value % 10 === 0 ? `${value}°` : ""
+								}
+
+								return value.toFixed(
 									selectedMetric === "batteryVoltageV"
 										? 2
 										: 0,
 								)
-							}
-							unit={selected.unit === "°C" ? "°" : undefined}
+							}}
 						/>
 						<Tooltip
 							labelFormatter={(value) =>

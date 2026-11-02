@@ -87,6 +87,8 @@ type ApiError = { error: { code: string; message: string } }
 
 **Device routes**
 
+- `weather-station-api.maydanachi.workers.dev` serves only these authenticated
+  device routes; public UI and read routes return `404` on that host.
 - `POST /api/v1/uploads` stores queued samples and returns configuration and any
   available firmware update.
 - `POST /api/v1/device-health` stores one health report after a real power-on.
@@ -94,6 +96,8 @@ type ApiError = { error: { code: string; message: string } }
 
 ## Worker and React
 
+- `weather.danielmaydana.com` serves the public UI and read API; device routes
+  return `404` on that host.
 - `GET /api/v1/stations/:stationId/current` returns configuration and the latest
   sample.
 - `GET /api/v1/stations/:stationId/samples` returns recent samples for the
